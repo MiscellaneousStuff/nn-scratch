@@ -24,14 +24,23 @@ public:
     float& operator() (unsigned int col) {
         return r[col];
     }
-    MatrixRow operator*= (const MatrixRow &other) {        
-        int n = this->size();
+    MatrixRow operator*= (const MatrixRow &other) {
+        std::vector<float> copy;
 
+        // *= element-wise
+        int n = this->size();
         for (int i=0; i<n; i++) {
-            r[i] *= other.r[i];
+            copy.push_back(r[i] *= other.r[i]);
         }
 
-        return *this;
+        return MatrixRow(copy);
+    }
+    float sum() {
+        float n = 0;
+        for (int i=0; i<r.size(); i++) {
+            n += r[i];
+        }
+        return n;
     }
     std::string to_string() {
         std::string row_out("\t[");
@@ -53,6 +62,11 @@ public:
 public:
     Matrix(std::vector<MatrixRow> data) {
         m = data;
+    };
+
+    Matrix(MatrixRow data) {
+        m.clear();
+        m.push_back(data);
     };
 
     Matrix(unsigned int rows, unsigned int cols) {
@@ -133,7 +147,7 @@ public:
         return out;
     };
 
-    static Matrix* dot(Matrix a, Matrix b) {
+    static float dot(Matrix a, Matrix b) {
         // Matrix copies
         Matrix aCopy = a;
         Matrix bCopy = b;
@@ -147,11 +161,13 @@ public:
 
         // Fill new matrix with values
         // row(A) * col(B)
-        std::vector<MatrixRow> data;
+        std::vector<float> row_sums;
         for (int r=0; r<rows; r++) {
-            
+            MatrixRow row = aCopy(r);
+            row *= bCopy(r);
+            row_sums.push_back(row.sum());
         }
-        return &a;
+        return MatrixRow(row_sums).sum();
     }
 };
 
@@ -213,21 +229,15 @@ public:
 
 
 int main() {
-    // Init data into matrix
-    MatrixRow row(std::vector<float>{1, 1});
-    std::vector<MatrixRow> rows{row};
-    Matrix input(rows);
-    input.transpose();
+    Matrix input(std::vector<float>{1, 0.9});
+    Matrix weights(std::vector<float>{0.4, 0.3});
 
-    // Initialize neural network
-    //NeuralNetwork nn(2, 1);
+    float Z = Matrix::dot(input, weights);
 
+    std::cout << "Inputs:\n" << input.to_string() << "\n";
+    std::cout << "Weights:\n" << weights.to_string() << "\n";
+    std::cout << "Z:\n" << std::to_string(Z) << "\n";
+    std::cout << "Activation:\n" << sigmoid(Z) << "\n";
+    
     return 0;
-    /*
-    // Forward pass test
-    Matrix pred = nn.forward(input);
-    std::cout << "Pred size: " << pred.size() << "\n";
-
-    std::cout << pred.to_string() << "\n";
-    */
 }
