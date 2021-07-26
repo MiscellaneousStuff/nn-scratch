@@ -5,7 +5,7 @@
 
 class MatrixRow {
 
-private:
+public:
     std::vector<float> r;
 
 public:
@@ -24,12 +24,30 @@ public:
     float& operator() (unsigned int col) {
         return r[col];
     }
+    MatrixRow operator*= (const MatrixRow &other) {        
+        int n = this->size();
+
+        for (int i=0; i<n; i++) {
+            r[i] *= other.r[i];
+        }
+
+        return *this;
+    }
+    std::string to_string() {
+        std::string row_out("\t[");
+        for (size_t c=0; c<this->size(); c++) {
+            float elem = r[c];
+            row_out += std::to_string(elem) + ", ";
+        }
+        row_out += "],\n";
+        return row_out;
+    }
 };
 
 
 class Matrix {
 
-private:
+public:
     std::vector<MatrixRow> m;
 
 public:
@@ -52,47 +70,26 @@ public:
         return std::pair<size_t, size_t>(this->rows(), this->cols());
     }
 
-    static void copy(Matrix source, Matrix destination) {
-        size_t source_rows = source.rows();
-        size_t source_cols = source.cols();
-        for (size_t c=0; c<source_cols; c++) {
-            std::vector<float> row;
-
+    Matrix& operator=(const Matrix &other) {
+        if (this != &other) {
+            m = other.m;
         }
+        return *this;
     }
 
     void transpose() {
-        /*
-        1. create buffer (from data) to store transposed matrix
-        2. fill buffer
-        3. copy buffer (to data)
-        */
-        size_t rows = this->rows();
-        size_t cols = this->cols();
-
         // New buffer
         std::vector<MatrixRow> buffer_data;
-        for (size_t c=0; c<cols; c++) {
+        for (size_t c=0; c<this->cols(); c++) {
             std::vector<float> row;
-            for(size_t r=0; r<rows; r++) {
+            for(size_t r=0; r<this->rows(); r++) {
                 row.push_back(m[r](c));
             }
             buffer_data.push_back(MatrixRow(row));
         }
-        Matrix buffer(buffer_data);
-        std::cout << "pre-t-buf:\n" << this->to_string() << "\n";
-        std::cout << "pos-t-buf:\n" << buffer.to_string() << "\n";
-        /*
-        for (size_t r=0; r<rows; r++) {
-            for (size_t c=0; c<cols; c++) {
-                if (r != c) { // skip flip line
-                    float tmp = m[r](c);
-                    m[r](c) = m[c](r);
-                    m[c](r) = tmp;
-                }
-            }
-        }
-        */
+        
+        // Copy buffer (to data)
+        *this = Matrix(buffer_data);
     }
 
     size_t size() {
@@ -109,13 +106,19 @@ public:
         return m[0].size();
     }
 
-    MatrixRow& operator() (unsigned int row) {
-        return m[row];
+    MatrixRow& operator() (int idx) {
+        if (idx > -1) {
+            // Row: idx > -1
+            return m[idx];
+        } else {
+            // Col: idx
+
+        }
     }
     float& operator() (unsigned int row, unsigned int col) {
         return m[row](col);
     }
-
+    
     std::string shape_to_string() {
         std::pair<size_t, size_t> shape = this->shape();
         return std::string("(" + std::to_string(shape.first) + ", " + std::to_string(shape.second) + ")");
@@ -124,36 +127,31 @@ public:
     std::string to_string() {
         std::string out("[\n");
         for (size_t r=0; r<m.size(); r++) {
-            std::string row_out("\t[");
-            MatrixRow row = m[r];
-            for (size_t c=0; c<row.size(); c++) {
-                float elem = row(c);
-                row_out += std::to_string(elem) + ", ";
-            }
-            row_out += "],\n";
-            out += row_out;
+            out += m[r].to_string();;
         }
         out += "]\n";
         return out;
     };
 
-    static Matrix dot(Matrix a, Matrix b) {
-        /*
-        // New matrix
+    static Matrix* dot(Matrix a, Matrix b) {
+        // Matrix copies
+        Matrix aCopy = a;
+        Matrix bCopy = b;
+
         size_t rows = a.rows();
-        size_t cols = b.cols();
-        Matrix m(rows, cols);
+
+        // Transpose either a or b
+        if (aCopy.shape() != bCopy.shape()) {
+            aCopy.transpose();
+        }
 
         // Fill new matrix with values
+        // row(A) * col(B)
+        std::vector<MatrixRow> data;
         for (int r=0; r<rows; r++) {
-            m[r] = rows[r] * cols[r];
-            std::vector<float> 
-            std::transform( v1.begin()+1, v1.end(),
-                v2.begin()+1, v.begin(),  // assumes v1,v2 of same size > 1, 
-                                          //       v one element smaller
-                std::multiplies<int>() );
+            
         }
-        */
+        return &a;
     }
 };
 
@@ -167,6 +165,7 @@ Matrix sigmoid(Matrix m) {
     return m;
 };
 
+
 /*
 class Layer {
     // Dummy Class (Not sure how to do this properly in C++ tbh :/)
@@ -178,7 +177,7 @@ public:
 //class Linear : public Layer {
 class Linear {
 
-private:
+public:
     Matrix weights;
 
 public:
@@ -192,7 +191,7 @@ public:
 
 class NeuralNetwork {
 
-private:
+public:
     std::vector<Linear> layers;
     unsigned int _in_dims;
     unsigned int _out_dims;
@@ -218,19 +217,17 @@ int main() {
     MatrixRow row(std::vector<float>{1, 1});
     std::vector<MatrixRow> rows{row};
     Matrix input(rows);
-    // std::cout << "Input size: " << input.shape_to_string() << "\n";
-    input.transpose(); // input needs to be transposed to work with neural network
-    // std::cout << "Input size: " << input.shape_to_string() << "\n";
+    input.transpose();
 
-    /*
     // Initialize neural network
-    NeuralNetwork nn(2, 1);
+    //NeuralNetwork nn(2, 1);
 
+    return 0;
+    /*
     // Forward pass test
     Matrix pred = nn.forward(input);
     std::cout << "Pred size: " << pred.size() << "\n";
 
-    /*
     std::cout << pred.to_string() << "\n";
     */
 }
