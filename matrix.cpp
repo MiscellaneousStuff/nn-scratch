@@ -19,13 +19,6 @@ Matrix::Matrix(MatrixRow data) {
 
 Matrix::Matrix(unsigned int rows, unsigned int cols) {
     m.resize(rows, MatrixRow(cols, 0.f));
-    size_t size = rows * cols;
-    size_t i = 0;
-    for (size_t r=0; r<rows; r++) {
-        for (size_t c=0; c<cols; c++) {
-            m[r](c) = i++;
-        }
-    }
 }
 
 std::pair<size_t, size_t> Matrix::shape() {
@@ -76,19 +69,17 @@ float& Matrix::operator() (unsigned int row, unsigned int col) {
     return m[row](col);
 }
 
-void Matrix::rand() {
-    size_t rows = this->rows();
-    size_t cols = this->cols();
-    for (size_t r=0; r<rows; r++) {
-        for (size_t c=0; c<cols; c++) {
-            m[r](c) = rand_float();
-        }
-    }
+void Matrix::random() {
+    const size_t n = this->rows();
+    for (MatrixRow &row : m) {
+        row.random();
+    };
 }
 
 std::string Matrix::shape_to_string() {
-    std::pair<size_t, size_t> shape = this->shape();
-    return std::string("(" + std::to_string(shape.first) + ", " + std::to_string(shape.second) + ")");
+    std::pair<size_t, size_t> shape;
+    shape = Matrix::shape();
+    return std::string("(" + std::to_string(shape.first) + "," + std::to_string(shape.second) + ")");
 }
 
 std::string Matrix::to_string() {

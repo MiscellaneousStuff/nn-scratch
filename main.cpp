@@ -26,24 +26,21 @@ public:
         layers.push_back(fc1);
     }
     Matrix forward(Matrix x) {
-        std::cout << "inputs :=" << x.to_string();
         x = layers.at(0).forward(x);
-        std::cout << "weights * inputs :=" << x.to_string();
         x = sigmoid(x);
-        std::cout << "sigmoid(weights * inputs) :=" << x.to_string();
         return x;
     }
 };
 
 
 int main() {
-    srand (static_cast <unsigned> (time(0)));
+    srand(static_cast<unsigned> (time(0)));
 
-    Matrix input(std::vector<float>{1, 0.9});
+    Matrix input(std::vector<float>{0.5, 0.5});
     NeuralNetwork nn(2, 1);
-
+   
+    
     Matrix pred = nn.forward(input);
-
     std::cout << pred.to_string();
 
     return 0;

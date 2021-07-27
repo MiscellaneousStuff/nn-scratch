@@ -8,7 +8,7 @@
 
 float rand_float() {
     //float rand_float = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-    return (float) (rand() / RAND_MAX);
+    return static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
 }
 
 float sigmoid(float x) {

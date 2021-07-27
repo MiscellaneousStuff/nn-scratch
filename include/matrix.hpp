@@ -22,13 +22,13 @@ public:
     
     // Setters
     Matrix& operator=(const Matrix &other);
-    MatrixRow& operator() (int idx);
-    void rand();
+    void random();
 
     // Getters
     size_t size();
     size_t rows();
     size_t cols();
+    MatrixRow& operator() (int idx);
     float& operator() (unsigned int row, unsigned int col);
     std::pair<size_t, size_t> shape();
 

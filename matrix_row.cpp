@@ -4,6 +4,7 @@
 
 #include "include/matrix.hpp"
 #include "include/matrix_row.hpp"
+#include "include/funcs.hpp"
 
 MatrixRow::MatrixRow(std::vector<float> data) {
     r = data;
@@ -47,6 +48,12 @@ float MatrixRow::sum() {
         n += r[i];
     }
     return n;
+}
+
+void MatrixRow::random() {
+    for (float& elem : r) {
+        elem = rand_float();
+    }
 }
 
 std::string MatrixRow::to_string() {
