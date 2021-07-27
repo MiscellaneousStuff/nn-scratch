@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include <cmath>
 #include <ctime>
@@ -19,10 +20,14 @@ public:
 
 public:
     NeuralNetwork(unsigned int in_dims, unsigned int out_dims) {
+        // Init dims
         _in_dims = in_dims;
         _out_dims = out_dims;
 
+        // Init layers
         Linear fc1 = Linear(in_dims, out_dims);
+
+        // Append layers
         layers.push_back(fc1);
     }
     Matrix forward(Matrix x) {
@@ -30,18 +35,41 @@ public:
         x = sigmoid(x);
         return x;
     }
+    void train(std::vector<Matrix> inputs, std::vector<Matrix> outputs,
+        float learning_rate=0.01, int epochs=1) {
+        for (int e=0; e<epochs; e++) {
+            for (int i=0; i<inputs.size(); i++) {
+                Matrix input  = inputs[i];
+                Matrix output = outputs[i];
+                Matrix pred = this->forward(input);
+                float loss = mse(output, pred);
+            }
+        }
+    }
 };
 
 
 int main() {
     srand(static_cast<unsigned> (time(0)));
 
-    Matrix input(std::vector<float>{0.5, 0.5});
+    // OR Inputs
+    std::vector<Matrix> inputs = {
+        //Matrix(std::vector<float>{0.0, 0.0})
+        //Matrix(std::vector<float>{0.0, 1.0}),
+        Matrix(std::vector<float>{1.0, 0.0}),
+        //Matrix(std::vector<float>{1.0, 1.0})
+    };
+
+    // OR Outputs
+    std::vector<Matrix> outputs = {
+        //Matrix(std::vector<float>{0.0})
+        //Matrix(std::vector<float>{1.0}),
+        Matrix(std::vector<float>{1.0}),
+        //Matrix(std::vector<float>{1.0})
+    };
+
     NeuralNetwork nn(2, 1);
-   
-    
-    Matrix pred = nn.forward(input);
-    std::cout << pred.to_string();
+    nn.train(inputs, outputs);
 
     return 0;
 }

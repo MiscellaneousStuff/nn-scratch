@@ -19,7 +19,8 @@ public:
 
     // Transformers
     void transpose();
-    
+    float sum();
+
     // Setters
     Matrix& operator=(const Matrix &other);
     void random();
@@ -38,4 +39,6 @@ public:
 
     // Static Transformers
     static float dot(Matrix a, Matrix b);
+    static Matrix subtract(Matrix a, Matrix b);
+    static Matrix power(Matrix a, float value);
 };

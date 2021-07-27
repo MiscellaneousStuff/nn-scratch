@@ -42,6 +42,30 @@ MatrixRow MatrixRow::operator*= (const MatrixRow &other) {
     return MatrixRow(copy);
 }
 
+MatrixRow MatrixRow::operator-= (const MatrixRow &other) {
+    std::vector<float> copy;
+
+    // -= element-wise
+    int n = this->size();
+    for (int i=0; i<n; i++) {
+        copy.push_back(r[i] -= other.r[i]);
+    }
+
+    return MatrixRow(copy);
+}
+
+MatrixRow MatrixRow::power(float value) {
+    std::vector<float> copy;
+
+    int n = this->size();
+    for (int i=0; i<n; i++) {
+        float val = pow(r[i], 2);
+        copy.push_back(val);
+    }
+
+    return MatrixRow(copy);
+}
+
 float MatrixRow::sum() {
     float n = 0;
     for (int i=0; i<r.size(); i++) {

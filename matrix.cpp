@@ -47,6 +47,20 @@ void Matrix::transpose() {
     *this = Matrix(buffer_data);
 }
 
+float Matrix::sum() {
+    size_t rows_n = Matrix::rows();
+
+    // Fill new matrix with values
+    std::cout << "sum start" << "\n";
+    
+    float sum = 0.f;
+    for (int r=0; r<rows_n; r++) {
+        sum += (*this)(r).sum();
+    }
+    std::cout << "sum done" << "\n";
+    return sum;
+}
+
 size_t Matrix::size() {
     size_t rows = m.size();
     size_t cols = m[0].size();
@@ -112,4 +126,41 @@ float Matrix::dot(Matrix a, Matrix b) {
         row_sums.push_back(row.sum());
     }
     return MatrixRow(row_sums).sum();
+}
+
+Matrix Matrix::subtract(Matrix a, Matrix b) {
+    // Matrix copies
+    Matrix aCopy = a;
+    Matrix bCopy = b;
+
+    size_t rows_n = a.rows();
+
+    // Transpose either a or b
+    if (aCopy.shape() != bCopy.shape()) {
+        aCopy.transpose();
+    }
+
+    // Fill new matrix with values
+    std::vector<MatrixRow> rows;
+    for (int r=0; r<rows_n; r++) {
+        MatrixRow row = aCopy(r);
+        row -= bCopy(r);
+        rows.push_back(row);
+    }
+    return Matrix(rows);
+}
+
+Matrix Matrix::power(Matrix a, float value) {
+    Matrix aCopy = a;
+
+    size_t rows_n = a.rows();
+
+    // Fill new matrix with values
+    std::vector<MatrixRow> rows;
+    for (int r=0; r<rows_n; r++) {
+        MatrixRow row = aCopy(r);
+        row = row.power(value);
+        rows.push_back(row);
+    }
+    return Matrix(rows);
 }

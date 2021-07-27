@@ -23,9 +23,11 @@ public:
 
     // Transformers
     MatrixRow operator*= (const MatrixRow &other);
+    MatrixRow operator-= (const MatrixRow &other);
     float sum();
     void random();
-    
+    MatrixRow power(float value);
+
     // Strings
     std::string to_string();
 };
