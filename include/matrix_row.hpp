@@ -27,6 +27,7 @@ public:
     float sum();
     void random();
     MatrixRow power(float value);
+    float mean();
 
     // Strings
     std::string to_string();

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "matrix.hpp"
+#include "layer.hpp"
 
-
-class Linear {
+class Linear : public Layer {
 
 public:
     Matrix weights;
@@ -13,5 +13,8 @@ public:
         : weights(in_dims, out_dims) {
             weights.random();
         }
-    Matrix forward(Matrix x);
+
+    Matrix forward(Matrix x) override {
+        return Matrix::dot(x, weights);
+    }
 };

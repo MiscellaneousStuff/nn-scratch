@@ -74,6 +74,10 @@ float MatrixRow::sum() {
     return n;
 }
 
+float MatrixRow::mean() {
+    return MatrixRow::sum() / MatrixRow::size();
+}
+
 void MatrixRow::random() {
     for (float& elem : r) {
         elem = rand_float();
